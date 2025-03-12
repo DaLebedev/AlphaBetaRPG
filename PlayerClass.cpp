@@ -4,6 +4,7 @@
  */
 #include "PlayerClass.h"
 
-const PlayerClass WARRIOR = {"Warrior", 80};
-const PlayerClass MAGE = {"Mage", 100};
-const PlayerClass ROGUE = {"Rogue", 120};
+// Define viable classes
+const PlayerClass WARRIOR = {"Warrior", 80, &CLUB};
+const PlayerClass MAGE = {"Mage", 100, &STAFF};
+const PlayerClass ROGUE = {"Rogue", 120, &DAGGER};

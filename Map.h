@@ -1,6 +1,6 @@
 /*
  * Author(s): Daniel Lebedev
- * Description: Represents the world map with a full map and player view.
+ * Description: Map class represents the world map with a full map and player view.
  */
 
 #ifndef MAP_H
@@ -9,6 +9,8 @@
 #include <iostream>
 #include "NPC.h"
 #include "Enemy.h"
+#include "Combat.h"
+
 using namespace std;
 
 // Constant vars for map
@@ -20,6 +22,7 @@ static const char EMPTY = ' ';
 static const char PLAYER = '@';
 static const char MERCHANT = '$';
 static const char ENEMY = '!';
+static const char ENDPOINT = '=';
 
 class Map {
 private:
@@ -38,6 +41,8 @@ public:
     void moveCharacter(char dir, Player& player);
     void updatePlayerMap();
     void checkInteractions(char dir, Player& player);
+    void updateEnemies(Enemy* enemy);
+    bool checkWin();
 
     // Getters
     int getPlayerX() { return playerX; }

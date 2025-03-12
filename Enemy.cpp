@@ -1,75 +1,63 @@
 /*
- * Author(s): Xavier Bailey
+ * Author(s): Daniel Lebedev, Xavier Bailey
  * Description: Defines Enemies stats and abilities.
  */
+
 #include "Enemy.h"
+#include "Item.h"
 #include <iostream>
 
-Enemy::Enemy(string n, int h, int d, string w, string a, int x, int y)
-    : name(n), health(h), damage(d), weapon(w), ability(a), x(x), y(y) {
+Enemy::Enemy(string n, int h, int d, string w, int x, int y, Item* loot)
+    : name(n), health(h), damage(d), weapon(w), x(x), y(y), loot(loot){
 }
 
 void Enemy::attack() {
-    cout << name << " attacks and deals " << damage << " damage with " << weapon << "!\n" << endl;
+    cout << "\n" << name << " attacks and deals " << damage << " damage with " << weapon << "!" << endl;
 }
 
-void Enemy::specialAbility() {
-    cout << name << " has used " << ability << ".\n" << endl;
+// SwarmOfBats - Stats
+SwarmOfBats::SwarmOfBats(int x, int y, Item* loot)
+    : Enemy("Swarm of Bats", 60, 10, "sharp fangs", x, y, loot) {
 }
 
-// GhostKnight - Stats/Abilities
-GhostKnight::GhostKnight(int x, int y)
-    : Enemy("Ghost Knight", 100, 15, "soul sword", "Haunting Strike", x, y) {
+// Goblin - Stats
+Goblin::Goblin(int x, int y, Item* loot)
+    : Enemy("Goblin", 75, 8, "dagger", x, y, loot) {
 }
 
-void GhostKnight::specialAbility() {
-    cout << name << " has used " << ability << ".\n" << endl;
-    cout << name << " performs a haunting strike that deals massive damage and causes the player to become frightened, reducing their attack power temporarily!\n" << endl;
+// Skeleton - Stats
+Skeleton::Skeleton(int x, int y, Item* loot)
+    : Enemy("Skeleton", 85, 10, "bone sword", x, y, loot) {
 }
 
-// Skeleton - Stats/Abilities
-Skeleton::Skeleton(int x, int y)
-    : Enemy("Skeleton", 75, 10, "bone sword", "Bone Cage", x, y) {
+// DarkMage - Stats
+DarkMage::DarkMage(int x, int y, Item* loot)
+    : Enemy("Dark Mage", 120, 12, "staff", x, y, loot) {
 }
 
-void Skeleton::specialAbility() {
-    cout << name << " has used " << ability << ".\n" << endl;
-    cout << name << " summons a cage of bones that traps and damages the player!\n" << endl;
+// GhostKnight - Stats
+GhostKnight::GhostKnight(int x, int y, Item* loot)
+    : Enemy("Ghost Knight", 150, 15, "soul sword", x, y, loot) {
 }
 
-// Goblin - Stats/Abilities
-Goblin::Goblin(int x, int y)
-    : Enemy("Goblin", 60, 8, "dagger", "Poison Stab", x, y) {
-}
-
-void Goblin::specialAbility() {
-    cout << name << " has used " << ability << ".\n" << endl;
-    cout << name << " stabs the player with a poisoned dagger, dealing damage over time!\n" << endl;
-}
-// SwarmOfBats - Stats/Abilities
-SwarmOfBats::SwarmOfBats(int x, int y)
-    : Enemy("The Swarm of Bats", 50, 10, "sharp fangs", "Sonic Screech", x, y) {
-}
-
-void SwarmOfBats::specialAbility() {
-    cout << name << " has used " << ability << ".\n" << endl;
-    cout << name << " stuns the player with a burst of sound, reducing their accuracy!\n" << endl;
-}
-
-// DarkMage - Stats/Abilities
-DarkMage::DarkMage(int x, int y)
-    : Enemy("Dark Mage", 90, 12, "staff", "Shadow Bolt", x, y) {
+// Dragon - Stats
+Dragon::Dragon(int x, int y, Item* loot)
+    : Enemy("Dragon", 250, 20, "fire breath", x, y, loot) {
 }
 
 
-void DarkMage::specialAbility() {
-    cout << name << " has used " << ability << ".\n" << endl;
-    cout << name << " casts a powerful shadow bolt that drastically drains the player's health over time!\n" << endl;
-}
+// Instantiate enemies
+SwarmOfBats BATS1(3, 3, &LESSER_HEALTH);
+SwarmOfBats BATS2(5, 7, &LESSER_HEALTH);
+Goblin GOBLIN1(1, 7, &LESSER_HEALTH);
+Goblin GOBLIN2(11, 5, &LESSER_HEALTH);
+Skeleton SKELETON1(7,1, &GREATER_HEALTH);
+Skeleton SKELETON2(13,7, &GREATER_HEALTH);
+DarkMage DARK_MAGE1(15,3, &GREATER_HEALTH);
+DarkMage DARK_MAGE2(19,1, &GREATER_HEALTH);
+GhostKnight GHOST_KNIGHT1(23,7, &EPIC_HEALTH);
+GhostKnight GHOST_KNIGHT2(19,7, &EPIC_HEALTH);
+Dragon DRAGON(23,1, &EPIC_HEALTH);
 
-// Instantiate predefined bosses
-// GhostKnight GHOSTKNIGHT;
-// Skeleton SKELETON;
-Goblin GOBLIN(4,3);
-// SwarmOfBats SWARMOFBATS;
-// DarkMage DARKMAGE;
+
+

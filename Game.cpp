@@ -14,52 +14,47 @@ using namespace std;
 class Game {
 public:
 
-    // UNFINISHED. NEEDS TO LOOP UNTIL GAME OVER (when currHealth = 0 or game is beat)
-    // Will also need to take in a param representing current room
+    // Runs on start, loops until player wins, handles basic decision logic for game
     void gameLoop(Player& player, Map& map) {
         string selection;
 
-        while (true) {
-            cout << "What would you like to do next:" << endl;
+        while (!map.checkWin()) {
+            cout << "\nWhat would you like to do next:" << endl;
             cout << "1 - Open Map" << endl;
             cout << "2 - Open Inventory" << endl;
             cout << "3 - Move rooms" << endl;
 
-            // If user is in room with NPC, option to speak to NPC
-            // cout << "4 - Talk to NPC" << endl;
-
-            // If user is in room with Enemy, Option to flee or fight replaces move rooms
-            // cout << "3 - Flee" << endl;
-            // cout << "4 - Fight" << endl;
-
             cin >> selection;
+            // Display map
             if (selection == "1") {
-                cout << "Opening Map..." << endl;
                 map.renderMap();
+            // Display inventory
             } else if (selection == "2") {
                 player.displayInventory();
+            // Move player
             } else if (selection == "3") {
                 playerMvmt(map, player);
+            // Handle invalid input
             } else {
-                cout << "Invalid selection! Try again!" << endl;
+                cout << "\nInvalid selection! Try again!" << endl;
             }
         }
+        // Win messsage
+        cout << "\nCongratulations " << player.getName() << "! You've cleared the dungeon and helped the Quest brothers escape!" << endl;
     }
 
 
-
-    // Runs when game starts, creates player with selected info
+    // Runs when game starts, creates player with entered info
     Player startGame() {
         string name, classSelection;
         PlayerClass playerClass;
-        Item* starterWeapon;
 
         cout << "Welcome! Please enter your desired name: " << endl;
         cin >> name;
 
         // Loop until valid input
         while (true) {
-            cout << "Please select your desired class: " << endl;
+            cout << "\nPlease select your desired class: " << endl;
             cout << "1 - Warrior" << endl;
             cout << "2 - Mage" << endl;
             cout << "3 - Rogue" << endl;
@@ -67,53 +62,27 @@ public:
 
             // Set class to warrior and give player club
             if (classSelection == "1") {
-                starterWeapon = &CLUB;
-                Player player(name, WARRIOR);
-                player.addItem(starterWeapon);
-                return player;
+                playerClass = WARRIOR;
+                break;
             // Set class to mage and give player staff
             } else if (classSelection == "2") {
-                starterWeapon = &STAFF;
-                Player player(name, MAGE);
-                player.addItem(starterWeapon);
-                return player;
+                playerClass = MAGE;
+                break;
             // Set class to rogue and give player dagger
             } else if (classSelection == "3") {
-                starterWeapon = &DAGGER;
-                Player player(name, ROGUE);
-                player.addItem(starterWeapon);
-                return player;
+                playerClass = ROGUE;
+                break;
             // Handle invalid input
             } else {
-                cout << "Invalid selection! Try again!" << endl;
+                cout << "\nInvalid selection! Try again!" << endl;
             }
         }
+        Player player(name, playerClass);
+        player.addItem(player.getEquippedWeapon());
+        return player;
     }
 
-    void NPCDialog(NPC& npc, Player& player) {
-        string selection;
-        while (true) {
-            cout << "Hello! What do you need?" << endl;
-            cout << "1 - Buy Item" << endl;
-            cout << "2 - Sell Item" << endl;
-            cout << "3 - View Quest" << endl;
-            cin >> selection;
-
-            if (selection == "1") {
-                cout << "Buying..." << endl;
-                break;
-            } else if (selection == "2") {
-                cout << "Selling..." << endl;
-                break;
-            } else if (selection == "3") {
-                npc.completeQuest(player);
-                break;
-            } else {
-                cout << "Invalid selection! Try again!" << endl;
-            }
-        }
-    }
-
+    // Runs when player chooses to move, handles player input for moving character
     void playerMvmt(Map& map, Player& player) {
         string selection;
         bool canMoveRight = map.checkValidDir('r');
@@ -123,7 +92,7 @@ public:
 
         while (true) {
 
-            cout << "Which Direction?" << endl;
+            cout << "\nWhich Direction?" << endl;
             if (canMoveRight) {
                 cout << "1 - Move Right" << endl;
             }
@@ -139,25 +108,24 @@ public:
 
             cin >> selection;
             if (selection == "1" && canMoveRight) {
-                cout << "Moving Right..." << endl;
+                cout << "\nMoving Right..." << endl;
                 map.moveCharacter('r', player);
                 break;
             } else if (selection == "2" && canMoveLeft) {
-                cout << "Moving Left..." << endl;
+                cout << "\nMoving Left..." << endl;
                 map.moveCharacter('l', player);
                 break;
             } else if (selection == "3" && canMoveUp) {
-                cout << "Moving Up..." << endl;
+                cout << "\nMoving Up..." << endl;
                 map.moveCharacter('u', player);
                 break;
             } else if (selection == "4" && canMoveDown) {
-                cout << "Moving Down..." << endl;
+                cout << "\nMoving Down..." << endl;
                 map.moveCharacter('d', player);
                 break;
             } else {
-                cout << "Invalid selection! Try again!" << endl;
+                cout << "\nInvalid selection! Try again!" << endl;
             }
         }
     }
-
 };

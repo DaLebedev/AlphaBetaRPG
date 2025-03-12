@@ -1,7 +1,8 @@
 /*
  * Author(s): Daniel Lebedev
- * Description: Defines Map dunctions.
+ * Description: Defines Map functions.
  */
+
 #include "Map.h"
 
 Map::Map() {
@@ -10,7 +11,7 @@ Map::Map() {
         {WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL},
         {WALL, EMPTY, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, WALL},
         {WALL, EMPTY, WALL, EMPTY, WALL, EMPTY, WALL, EMPTY, WALL, WALL, WALL, WALL, WALL, EMPTY, WALL, WALL, WALL, EMPTY, WALL, EMPTY, WALL, EMPTY, WALL, EMPTY, WALL},
-        {WALL, EMPTY, WALL, EMPTY, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, WALL, EMPTY, WALL, EMPTY, WALL, EMPTY, EMPTY},
+        {WALL, EMPTY, WALL, EMPTY, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, WALL, EMPTY, WALL, EMPTY, WALL, ENDPOINT, WALL},
         {WALL, EMPTY, WALL, WALL, WALL, EMPTY, WALL, EMPTY, WALL, WALL, WALL, EMPTY, WALL, EMPTY, WALL, WALL, WALL, EMPTY, WALL, EMPTY, WALL, EMPTY, WALL, WALL, WALL},
         {WALL, EMPTY, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WALL, EMPTY, WALL, EMPTY, EMPTY, EMPTY, WALL},
         {WALL, WALL, WALL, EMPTY, WALL, WALL, WALL, WALL, WALL, EMPTY, WALL, WALL, WALL, EMPTY, WALL, WALL, WALL, WALL, WALL, WALL, WALL, EMPTY, WALL, EMPTY, WALL},
@@ -28,10 +29,21 @@ Map::Map() {
     // Place player on map
     fullMap[playerY][playerX] = PLAYER;
 
-    // UNFINISHED
     // Add enemies and NPCs to vectors
-    enemies.push_back(GOBLIN);
-    npcs.push_back(QUEST_GIVER_1);
+    enemies.push_back(BATS1);
+    enemies.push_back(BATS2);
+    enemies.push_back(GOBLIN1);
+    enemies.push_back(GOBLIN2);
+    enemies.push_back(SKELETON1);
+    enemies.push_back(SKELETON2);
+    enemies.push_back(DARK_MAGE1);
+    enemies.push_back(DARK_MAGE2);
+    enemies.push_back(GHOST_KNIGHT1);
+    enemies.push_back(GHOST_KNIGHT2);
+    enemies.push_back(DRAGON);
+    npcs.push_back(QUEST_GIVER1);
+    npcs.push_back(QUEST_GIVER2);
+    npcs.push_back(QUEST_GIVER3);
 
     // Add enemies to map
     for (Enemy& enemy : enemies) {
@@ -47,6 +59,7 @@ Map::Map() {
 // Displays player's map
 void Map::renderMap() {
     updatePlayerMap();
+    cout << "\n";
     for(const auto &row : playerMap) {
         for (char cell : row) {
             cout << cell << ' ';
@@ -82,17 +95,21 @@ void Map::moveCharacter(char dir, Player& player) {
         case 'd': newY += 2; break;  // Down
     }
 
-    checkInteractions(dir, player);
-
     // If the chosen direction is valid, update full map, then update player map
     if (checkValidDir(dir)) {
-        // UNFINISHED
+        // Trigger interaction
+        checkInteractions(dir, player);
+
+        // Set original cell to empty
         char currentCell = fullMap[playerY][playerX];
         fullMap[playerY][playerX] = (currentCell == PLAYER) ? EMPTY : currentCell;
-        if (fullMap[newY][newX] != ENEMY && fullMap[newY][newX] != MERCHANT) {
-            fullMap[newY][newX] = PLAYER; // Only place player if it's not an enemy or NPC
+
+        // Only place player if new position is NOT an enemy, NPC, or the endpoint
+        if (fullMap[newY][newX] != ENEMY && fullMap[newY][newX] != MERCHANT && fullMap[newY][newX] != ENDPOINT ) {
+            fullMap[newY][newX] = PLAYER;
         }
 
+        // Update position
         updatePlayerMap();
         playerX = newX;
         playerY = newY;
@@ -110,7 +127,7 @@ void Map::updatePlayerMap() {
     }
 }
 
-// UNFINISHED
+// Checks if playyer is on top of NPC or enemy and triggers appropriate function
 void Map::checkInteractions(char dir, Player& player) {
     int newX = playerX, newY = playerY;
     switch (tolower(dir)) {
@@ -120,20 +137,47 @@ void Map::checkInteractions(char dir, Player& player) {
         case 'd': newY += 2; break;  // Down
     }
 
+    // If on enemy, start combat
     if (fullMap[newY][newX] == ENEMY) {
         for (Enemy& enemy : enemies) {
             if (enemy.getX() == newX && enemy.getY() == newY) {
-                // UNFINISHED
-                cout << "You encountered " << enemy.getName() << endl;
-                // Start combat
+                Combat::combatDialog(player, &enemy);
+                updateEnemies(&enemy);
             }
         }
+    // If on NPC, start NPC dialog
     } else if (fullMap[newY][newX] == MERCHANT) {
         for (NPC& npc : npcs) {
             if (npc.getX() == newX && npc.getY() == newY) {
-                cout << "You encountered " << npc.getName() << "!" << endl;
                 npc.NPCDialog(player);
             }
         }
     }
 }
+
+// If enemy has no health left remove it from the map
+void Map::updateEnemies(Enemy* enemy) {
+    if (enemy->getHealth() <= 0) {
+        fullMap[enemy->getY()][enemy->getX()] = EMPTY;
+    }
+}
+
+// Check if player has met all win conditions and return bool
+bool Map::checkWin() {
+    int questsCompleted = 0;
+    int totalHealth = 0;
+    for (Enemy& enemy : enemies) {
+        totalHealth += enemy.getHealth();
+    }
+    for (NPC& npc : npcs) {
+        if (npc.getQuestCompleted()) {
+            questsCompleted += 1;
+        }
+    }
+    if (totalHealth <= 0 && playerX == 3 && playerY == 1 && questsCompleted == 3) {
+        return true;
+    }
+    return false;
+}
+
+

@@ -1,6 +1,6 @@
 /*
  * Author(s): Daniel Lebedev
- * Description: Represents items which can be either weapon or consumable.
+ * Description: Item class represents items which can be either weapon or consumable.
  */
 #ifndef ITEM_H
 #define ITEM_H
@@ -14,8 +14,10 @@ protected:
     // All items have a name
     string name;
 public:
+    // Base constructor & function
     Item(string name): name(name) {}
     virtual void use() = 0;
+
     // Getters
     string getName() { return name; }
 };
@@ -27,17 +29,16 @@ protected:
     int damage;
     string dmgType;
 public:
-    // Constructor calls Item constructor
-    Weapon(string name, int damage, string dmgType) :
-        Item(name), damage(damage), dmgType(dmgType) {}
+    // Weapon constructor calls Item constructor
+    Weapon(string name, int damage) : Item(name), damage(damage) {}
+
     // Override virtual use function
     virtual void use() {
-        // Modify to only use weapon in combat
-        cout << "Using " << name << " for " << damage << " " << dmgType << " dmg." << endl;
+        cout << "\nYou attack with " << name << " for " << damage << " dmg." << endl;
     }
-    // Getters
+
+    // Getter
     int getDamage() { return damage; }
-    string getDmgType() { return dmgType; }
 };
 
 // Consumable inherits and overrides Item class
@@ -46,13 +47,14 @@ protected:
     // Consumables have heal amt
     int healAmt;
 public:
-    // Constructor calls Item constructor
-    Consumable(string name, int healAmt) :
-        Item(name), healAmt(healAmt) {}
+    // Consumable constructor calls Item constructor
+    Consumable(string name, int healAmt) : Item(name), healAmt(healAmt) {}
+
     // Override virtual use function
     virtual void use() {
-        cout << "Healing w/ " << name << " for "  << healAmt << " hp." << endl;
+        cout << "\nHealing w/ " << name << " for "  << healAmt << " hp." << endl;
     }
+
     // Getter
     int getHealAmt() { return healAmt; }
 };
@@ -64,6 +66,8 @@ extern Weapon DAGGER;
 extern Weapon WARHAMMER;
 extern Weapon SPELL_TOME;
 extern Weapon SWORD;
+
+// Define consumables
 extern Consumable LESSER_HEALTH;
 extern Consumable GREATER_HEALTH;
 extern Consumable EPIC_HEALTH;

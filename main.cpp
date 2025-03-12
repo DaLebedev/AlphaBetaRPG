@@ -14,15 +14,13 @@ int main()
     // Create Game object
     Game game;
 
-    // Create player by calling startGame()
+    // Create player object with user's input
     Player player = game.startGame();
 
-    player.addItem(&LESSER_HEALTH);
-
-    // Create map
+    // Create map object
     Map map;
 
-    // Starts game loop. Not yet finished
+    // Starts game loop
     game.gameLoop(player, map);
 
 }
